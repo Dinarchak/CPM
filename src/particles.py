@@ -14,6 +14,7 @@ class Particle:
 
 class ParticleEnsemble:
     """Набор частиц (пучок). Хранит массивы координат и импульсов."""
+    #TODO прописать способ задать начальное распределение(пока внутри эллипса)
     def __init__(self):
         self.x = np.array([])   # N частиц
         self.y = np.array([])

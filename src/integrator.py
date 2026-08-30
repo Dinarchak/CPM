@@ -34,7 +34,7 @@ class RK4Integrator:
 
         return np.array([vx, vy, vz, Fx, Fy, Fz])
 
-    def step(self, ensemble: ParticleEnsemble, fieldE: MagneticField, fieldB: MagneticField, dt) -> None:
+    def step(self, ensemble: ParticleEnsemble, fieldE: ElectricField, fieldB: MagneticField, dt) -> None:
         """
         Один шаг RK4 для всех частиц в ансамбле.
         ensemble – объект ParticleEnsemble с массивами координат и импульсов.

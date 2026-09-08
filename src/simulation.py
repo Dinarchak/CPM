@@ -1,13 +1,12 @@
 import numpy as np
 from particles import ParticleEnsemble
-from fields import ConstantElectricField, LinearZMagneticField, QuadrupoleMagneticField
 from integrator import RK4Integrator
 
 class Simulation:
-    def __init__(self, config):
+    def __init__(self, config, electric_field, magnetic_fields):
         self.ensemble = ParticleEnsemble()
-        self.electric_field = ConstantElectricField()
-        self.magnetic_fields = LinearZMagneticField()
+        self.electric_field = electric_field
+        self.magnetic_fields = magnetic_fields
         self.integrator = RK4Integrator()
         self.dt = config['time_step']
         self.n_steps = config['n_steps']
@@ -31,6 +30,7 @@ class Simulation:
             self.integrator.step(self.ensemble, self.electric_field, self.magnetic_fields, self.dt)
             t += self.dt
             if step % self.save_interval == 0:
+                print(f'Прошло итераций: {step}')
                 self._save_state(t)
         # Сохранить конечное состояние
         self._save_state(t)

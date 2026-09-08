@@ -2,31 +2,32 @@ from dataclasses import dataclass
 import numpy as np
 
 @dataclass
-class Particle:
-    x: float  # координаты [м]
-    y: float
-    z: float
-    px: float  # импульсы [кг*м/с]
-    py: float
-    pz: float
-    q: float   # заряд [Кл]
-    m: float   # масса [кг]
+class PhaseSpaceDefinition:
+    names: dict[str, int]
+
+    def get(self, name: str) -> int:
+        if name not in self.names:
+            raise Exception('Нет такого параметра в фазовом просранстве')
+        return self.names[name]
+
 
 class ParticleEnsemble:
     """Набор частиц (пучок). Хранит массивы координат и импульсов."""
     #TODO прописать способ задать начальное распределение(пока внутри эллипса)
-    def __init__(self, semi_axes: np.ndarray=[1, 1, 1, 1, 1, 1], n_particels: int=1000):
-        self.x = np.array([])
-        self.y = np.array([])
-        self.z = np.array([])
-        self.px = np.array([])
-        self.py = np.array([])
-        self.pz = np.array([])
-        self.q = np.array([])
-        self.m = np.array([])
-        self.n_particles = 0
+    def __init__(
+            self, 
+            n_particels: int,
+            q: int, 
+            m: int,
+            start_multitude_gen_foo,
+            start_multitude_gen_foo_metadata: dict):
 
-        self.generate_start_multitude(semi_axes, n_particels)
+        self.q = q
+        self.m = m     
+        self.generate_start_multitude = start_multitude_gen_foo
+        self.start_multitude_params = start_multitude_gen_foo_metadata.copy()
+        self.n_particles = n_particels
+        self.state = self.generate_start_multitude(n=self.n_particles, **self.start_multitude_params)
 
     def generate_start_multitude(self, semi_axes, n_particles, center=None,  charge=1.602e-19, mass=9.109e-31):
         semi_axes = np.array(semi_axes, dtype=float)

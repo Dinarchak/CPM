@@ -1,9 +1,24 @@
+from dataclasses import dataclass
 import numpy as np
-from particles import ParticleEnsemble
+from particles import ParticleEnsemble, PhaseSpaceDefinition
 from integrator import RK4Integrator
 
+@dataclass
+class SimulationResult:
+    t: np.ndarray
+    states: np.ndarray
+    phase_space: PhaseSpaceDefinition
+
+    def save_results(self, filename, result):
+        np.savez_compressed(
+            filename,
+            t=result.t,
+            states=result.states,
+            variables=np.array(result.phase_space.names),
+        )
+
 class Simulation:
-    def __init__(self, config, electric_field, magnetic_fields):
+    def __init__(self, config, electric_field, magnetic_fields, phase_space: PhaseSpaceDefinition):
         self.ensemble = ParticleEnsemble()
         self.electric_field = electric_field
         self.magnetic_fields = magnetic_fields
@@ -11,16 +26,11 @@ class Simulation:
         self.dt = config['time_step']
         self.n_steps = config['n_steps']
         self.save_interval = config['save_interval']
-        self.results = {'t': [], 'x': [], 'y': [], 'z': [], 'px': [], 'py': [], 'pz': []}
+        self.results = {'states': [], 't': []}
 
     def _save_state(self, t):
         self.results['t'].append(t)
-        self.results['x'].append(self.ensemble.x.copy())
-        self.results['y'].append(self.ensemble.y.copy())
-        self.results['z'].append(self.ensemble.z.copy())
-        self.results['px'].append(self.ensemble.px.copy())
-        self.results['py'].append(self.ensemble.py.copy())
-        self.results['pz'].append(self.ensemble.pz.copy())
+        self.results['states'].append(self.ensemble.state)
 
     def run(self):
         self._save_state(0.0)
@@ -34,10 +44,4 @@ class Simulation:
         # Сохранить конечное состояние
         self._save_state(t)
 
-    # Методы для сохранения/загрузки (опционально)
-    def save_results(self, filename):
-        np.savez_compressed(filename, **self.results)
-
-    def load_results(self, filename):
-        data = np.load(filename)
-        self.results = {key: data[key] for key in data.files}
+        return SimulationResult(t=self.results['t'], states=self.results['states'], phase_space=self.phase_space)

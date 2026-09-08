@@ -9,7 +9,7 @@ class RK4Integrator:
     def __init__(self, c=2.99792458e8):
         self.c = c  # скорость света, м/с
 
-    def derivatives(self, state, q, m, fieldE: ElectricField, fieldB: MagneticField, t=0) -> np.ndarray:
+    def derivatives(self, state, q, m, fieldE: ElectricField, fieldB: MagneticField, t: int) -> np.ndarray:
         """
         Вычисляет производные для одной частицы.
         state = [x, y, z, px, py, pz]
@@ -34,7 +34,7 @@ class RK4Integrator:
 
         return np.array([vx, vy, vz, Fx, Fy, Fz])
 
-    def step(self, ensemble: ParticleEnsemble, fieldE: ElectricField, fieldB: MagneticField, dt) -> None:
+    def step(self, ensemble: ParticleEnsemble, fieldE: ElectricField, fieldB: MagneticField, dt, t=0) -> None:
         """
         Один шаг RK4 для всех частиц в ансамбле.
         ensemble – объект ParticleEnsemble с массивами координат и импульсов.
@@ -50,10 +50,10 @@ class RK4Integrator:
             m = ensemble.m[i]
 
             # Классический RK4
-            k1 = self.derivatives(state, q, m, fieldE, fieldB)
-            k2 = self.derivatives(state + 0.5 * dt * k1, q, m, fieldE, fieldB)
-            k3 = self.derivatives(state + 0.5 * dt * k2, q, m, fieldE, fieldB)
-            k4 = self.derivatives(state + dt * k3, q, m, fieldE, fieldB)
+            k1 = self.derivatives(state, q, m, fieldE, fieldB, t)
+            k2 = self.derivatives(state + 0.5 * dt * k1, q, m, fieldE, fieldB, t + 0.5 * dt)
+            k3 = self.derivatives(state + 0.5 * dt * k2, q, m, fieldE, fieldB, t + 0.5 * dt)
+            k4 = self.derivatives(state + dt * k3, q, m, fieldE, fieldB, t + dt)
 
             new_state = state + (dt / 6.0) * (k1 + 2*k2 + 2*k3 + k4)
 

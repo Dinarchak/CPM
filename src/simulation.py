@@ -23,11 +23,10 @@ class Simulation:
         self.results['pz'].append(self.ensemble.pz.copy())
 
     def run(self):
-        self.ensemble.generate_start_multitude([1, 1, 1, 1, 1, 1], 1000)
         self._save_state(0.0)
         t = 0.0
         for step in range(self.n_steps):
-            self.integrator.step(self.ensemble, self.electric_field, self.magnetic_fields, self.dt)
+            self.integrator.step(self.ensemble, self.electric_field, self.magnetic_fields, self.dt, t)
             t += self.dt
             if step % self.save_interval == 0:
                 print(f'Прошло итераций: {step}')

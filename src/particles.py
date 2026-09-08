@@ -15,8 +15,8 @@ class Particle:
 class ParticleEnsemble:
     """Набор частиц (пучок). Хранит массивы координат и импульсов."""
     #TODO прописать способ задать начальное распределение(пока внутри эллипса)
-    def __init__(self):
-        self.x = np.array([])   # N частиц
+    def __init__(self, semi_axes: np.ndarray=[1, 1, 1, 1, 1, 1], n_particels: int=1000):
+        self.x = np.array([])
         self.y = np.array([])
         self.z = np.array([])
         self.px = np.array([])
@@ -25,6 +25,8 @@ class ParticleEnsemble:
         self.q = np.array([])
         self.m = np.array([])
         self.n_particles = 0
+
+        self.generate_start_multitude(semi_axes, n_particels)
 
     def generate_start_multitude(self, semi_axes, n_particles, center=None,  charge=1.602e-19, mass=9.109e-31):
         semi_axes = np.array(semi_axes, dtype=float)

@@ -8,7 +8,6 @@ class RK4Integrator:
     """
     def __init__(self,
                 derivatives_foo,
-                derivatives_params,
                 c=2.99792458e8):
         self.c = c  # скорость света, м/с
         self.derivatives = derivatives_foo

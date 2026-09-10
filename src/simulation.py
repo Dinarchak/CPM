@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import numpy as np
 from particles import ParticleEnsemble, PhaseSpaceDefinition
+from fields import MagneticField, ElectricField
 from integrator import RK4Integrator
 
 @dataclass
@@ -14,15 +15,24 @@ class SimulationResult:
             filename,
             t=result.t,
             states=result.states,
-            variables=np.array(result.phase_space.names),
+            variables=np.array(list(self.phase_space.names.keys())),
         )
 
 class Simulation:
-    def __init__(self, config, electric_field, magnetic_fields, phase_space: PhaseSpaceDefinition):
-        self.ensemble = ParticleEnsemble()
+    def __init__(
+            self,
+            phase_space: PhaseSpaceDefinition,
+            config: dict,
+            electric_field: ElectricField,
+            magnetic_fields: MagneticField,
+            ensemble: ParticleEnsemble,
+            derivatives_foo
+        ):
+        self.ensemble = ensemble
+        self.phase_space = phase_space
         self.electric_field = electric_field
         self.magnetic_fields = magnetic_fields
-        self.integrator = RK4Integrator()
+        self.integrator = RK4Integrator(derivatives_foo=derivatives_foo)
         self.dt = config['time_step']
         self.n_steps = config['n_steps']
         self.save_interval = config['save_interval']
@@ -30,7 +40,7 @@ class Simulation:
 
     def _save_state(self, t):
         self.results['t'].append(t)
-        self.results['states'].append(self.ensemble.state)
+        self.results['states'].append(self.ensemble.state.copy())
 
     def run(self):
         self._save_state(0.0)
@@ -44,4 +54,4 @@ class Simulation:
         # Сохранить конечное состояние
         self._save_state(t)
 
-        return SimulationResult(t=self.results['t'], states=self.results['states'], phase_space=self.phase_space)
+        return SimulationResult(t=np.ndarray(self.results['t']), states=np.ndarray(self.results['states']), phase_space=self.phase_space)
